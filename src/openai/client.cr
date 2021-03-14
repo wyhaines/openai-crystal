@@ -42,10 +42,10 @@ module OpenAI
         temperature: 0,
         max_tokens: 1,
         top_p: 0,
-        logprobs: 3
+        logprobs: 3,
+        engine: "content-filter-alpha-c4"
       )
 
-      puts data.inspect
       data
     end
 

@@ -36,6 +36,19 @@ module OpenAI
       Array(Engine).from_json(engines["data"].to_json)
     end
 
+    def filter(prompt : String)
+      data = completions(
+        prompt: "<|endoftext|>#{prompt}\n--\nLabel:",
+        temperature: 0,
+        max_tokens: 1,
+        top_p: 0,
+        logprobs: 3
+      )
+
+      puts data.inspect
+      data
+    end
+
     def completions(prompt : String? = nil, max_tokens : Int32? = nil, temperature : Float64? = nil, top_p : Float64? = nil, n : Int32? = nil, logprobs : Int32? = nil, echo : Bool? = nil, stop : String? | Array(String) = nil, presence_penalty : Float64? = nil, frequency_penalty : Float64? = nil, engine : String = default_engine)
       body = {
         "prompt"            => prompt,

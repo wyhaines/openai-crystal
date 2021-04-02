@@ -37,7 +37,7 @@ module OpenAI
     end
 
     def filter(prompt : String)
-      data = completions(
+      completions(
         prompt: "<|endoftext|>#{prompt}\n--\nLabel:",
         temperature: 0,
         max_tokens: 1,
@@ -45,8 +45,6 @@ module OpenAI
         logprobs: 3,
         engine: "content-filter-alpha-c4"
       )
-
-      data
     end
 
     def completions(prompt : String? = nil, max_tokens : Int32? = nil, temperature : Float64? = nil, top_p : Float64? = nil, n : Int32? = nil, logprobs : Int32? = nil, echo : Bool? = nil, stop : String? | Array(String) = nil, presence_penalty : Float64? = nil, frequency_penalty : Float64? = nil, engine : String = default_engine)

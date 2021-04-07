@@ -2,8 +2,7 @@ require "http/client"
 
 module OpenAI
   class Client
-    class Error < Exception
-    end
+    class Error < Exception; end
 
     record LastResponse, date : Time, organization : String, processing_ms : Int32, request_id : String, response : HTTP::Client::Response do
       def initialize(@response : HTTP::Client::Response)
@@ -19,9 +18,11 @@ module OpenAI
     getter last_response : LastResponse?
     setter api_key : String
     property default_engine : String
+    property default_username : String
 
-    def initialize(api_key : String, default_engine : String = "davinci")
+    def initialize(api_key : String, default_username = "testuser", default_engine : String = "davinci")
       @api_key = api_key
+      @default_username = default_username
       @default_engine = default_engine
     end
 
@@ -36,18 +37,19 @@ module OpenAI
       Array(Engine).from_json(engines["data"].to_json)
     end
 
-    def filter(prompt : String)
+    def filter(prompt : String, username : String = default_username)
       completions(
         prompt: "<|endoftext|>#{prompt}\n--\nLabel:",
-        temperature: 0,
+        temperature: 0.0,
         max_tokens: 1,
         top_p: 0,
-        logprobs: 3,
+        logprobs: 10,
+        user: username,
         engine: "content-filter-alpha-c4"
       )
     end
 
-    def completions(prompt : String? = nil, max_tokens : Int32? = nil, temperature : Float64? = nil, top_p : Float64? = nil, n : Int32? = nil, logprobs : Int32? = nil, echo : Bool? = nil, stop : String? | Array(String) = nil, presence_penalty : Float64? = nil, frequency_penalty : Float64? = nil, engine : String = default_engine)
+    def completions(prompt : String? = nil, max_tokens : Int32? = nil, temperature : Float64? = nil, top_p : Float64? = nil, n : Int32? = nil, logprobs : Int32? = nil, echo : Bool? = nil, stop : String? | Array(String) = nil, presence_penalty : Float64? = nil, frequency_penalty : Float64? = nil, engine : String = default_engine, username : String = default_username)
       body = {
         "prompt"            => prompt,
         "max_tokens"        => max_tokens,
@@ -59,13 +61,14 @@ module OpenAI
         "stop"              => stop,
         "presence_penalty"  => presence_penalty,
         "frequency_penalty" => frequency_penalty,
+        "user"              => username
       }.compact
 
       response_body = post("/v1/engines/#{engine}/completions", body: body)
       Completion.from_json(response_body)
     end
 
-    def completions(prompt : String? = nil, max_tokens : Int32? = nil, temperature : Float64? = nil, top_p : Float64? = nil, n : Int32? = nil, logprobs : Int32? = nil, echo : Bool? = nil, stop : String? | Array(String) = nil, presence_penalty : Float64? = nil, frequency_penalty : Float64? = nil, engine : String = default_engine, &block : Completion -> _)
+    def completions(prompt : String? = nil, max_tokens : Int32? = nil, temperature : Float64? = nil, top_p : Float64? = nil, n : Int32? = nil, logprobs : Int32? = nil, echo : Bool? = nil, stop : String? | Array(String) = nil, presence_penalty : Float64? = nil, frequency_penalty : Float64? = nil, engine : String = default_engine, username : String = default_username, &block : Completion -> _)
       body = {
         "prompt"            => prompt,
         "max_tokens"        => max_tokens,
@@ -78,6 +81,7 @@ module OpenAI
         "stream"            => true,
         "presence_penalty"  => presence_penalty,
         "frequency_penalty" => frequency_penalty,
+        "user"              => username
       }.compact
 
       event_source = EventSource.new("https://api.openai.com/v1/engines/#{engine}/completions", base_headers: headers, body: body.to_json)

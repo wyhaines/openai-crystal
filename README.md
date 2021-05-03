@@ -9,7 +9,7 @@
    ```yaml
    dependencies:
      openai:
-       github: sferik/openai-crystal
+       github: wyhaines/openai-crystal
    ```
 
 2. Run `shards install`

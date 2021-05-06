@@ -8,9 +8,7 @@ describe OpenAI::Client do
 
     it "raises an exception" do
       expect_raises(OpenAI::Client::Error, "Incorrect API key provided: sk-f00. You can find your API key at https://beta.openai.com.") do
-        with_client do |client|
-          client.engine("davinci-v2")
-        end
+        with_client(&.engine("davinci-v2"))
       end
     end
   end
@@ -22,9 +20,7 @@ describe OpenAI::Client do
 
     it "raises an exception" do
       expect_raises(OpenAI::Client::Error, "No engine with that ID: turing") do
-        with_client do |client|
-          client.engine("turing")
-        end
+        with_client(&.engine("turing"))
       end
     end
   end

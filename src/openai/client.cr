@@ -44,7 +44,7 @@ module OpenAI
         max_tokens: 1,
         top_p: 0,
         logprobs: 10,
-        user: username,
+        username: username,
         engine: "content-filter-alpha-c4"
       )
     end

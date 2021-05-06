@@ -49,12 +49,12 @@ module OpenAI
       )
     end
 
-    def completions(prompt : String? = nil, max_tokens : Int32? = nil, temperature : Float64? = nil, top_p : Float64? = nil, n : Int32? = nil, logprobs : Int32? = nil, echo : Bool? = nil, stop : String? | Array(String) = nil, presence_penalty : Float64? = nil, frequency_penalty : Float64? = nil, engine : String = default_engine, username : String = default_username)
+    def completions(prompt : String? = nil, max_tokens : Int32? = nil, temperature : Float64? = nil, top_p : Int|Float64? = nil, n : Int32? = nil, logprobs : Int32? = nil, echo : Bool? = nil, stop : String? | Array(String) = nil, presence_penalty : Float64? = nil, frequency_penalty : Float64? = nil, engine : String = default_engine, username : String = default_username)
       body = {
         "prompt"            => prompt,
         "max_tokens"        => max_tokens,
         "temperature"       => temperature,
-        "top_p"             => top_p,
+        "top_p"             => top_p.to_f64,
         "n"                 => n,
         "logprobs"          => logprobs,
         "echo"              => echo,
@@ -68,12 +68,12 @@ module OpenAI
       Completion.from_json(response_body)
     end
 
-    def completions(prompt : String? = nil, max_tokens : Int32? = nil, temperature : Float64? = nil, top_p : Float64? = nil, n : Int32? = nil, logprobs : Int32? = nil, echo : Bool? = nil, stop : String? | Array(String) = nil, presence_penalty : Float64? = nil, frequency_penalty : Float64? = nil, engine : String = default_engine, username : String = default_username, &block : Completion -> _)
+    def completions(prompt : String? = nil, max_tokens : Int32? = nil, temperature : Float64? = nil, top_p : Int|Float64? = nil, n : Int32? = nil, logprobs : Int32? = nil, echo : Bool? = nil, stop : String? | Array(String) = nil, presence_penalty : Float64? = nil, frequency_penalty : Float64? = nil, engine : String = default_engine, username : String = default_username, &block : Completion -> _)
       body = {
         "prompt"            => prompt,
         "max_tokens"        => max_tokens,
         "temperature"       => temperature,
-        "top_p"             => top_p,
+        "top_p"             => top_p.to_f64,
         "n"                 => n,
         "logprobs"          => logprobs,
         "echo"              => echo,
